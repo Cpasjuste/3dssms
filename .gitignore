@@ -31,3 +31,8 @@
 # Debug files
 *.dSYM/
 
+# Custom
+.idea/
+build/
+*.3dsx
+

@@ -1,8 +1,11 @@
-
 #ifndef __SDLSMS_H__
 #define __SDLSMS_H__
 
 #include "shared.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define SMSSDL_CORE_VER  VERSION
 #define SMSSDL_RELEASE   "7"
@@ -25,28 +28,32 @@
 #define MACHINE_FPS 60
 
 typedef struct {
-  int up,down,left,right;
-  int b1,b2;
-  int start;
+    int up, down, left, right;
+    int b1, b2;
+    int start;
 } t_paddle;
 
 typedef struct {
-  int fm;
-  int japan;
-  int usesram;
-  int frameskip;
-  int fullscreen;
-  int filter;
-  int fullspeed;
-  int nosound;
-  int joystick;
-  char game_name[0x100];
+    int fm;
+    int japan;
+    int usesram;
+    int frameskip;
+    int fullscreen;
+    int filter;
+    int fullspeed;
+    int nosound;
+    int joystick;
+    char game_name[0x100];
 } t_config;
 
-extern int ds_init(const t_config*);
+extern int ds_init(const t_config *);
+
 extern void ds_emulate();
+
 extern void ds_shutdown();
 
-
+#ifdef __cplusplus
+}
+#endif
 
 #endif

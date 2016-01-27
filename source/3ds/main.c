@@ -1,4 +1,3 @@
-
 /*
     Copyright (c) 2002, 2003 Gregory Montoir
 
@@ -18,60 +17,49 @@
 */
 
 #include <3ds.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <stdarg.h>
 
 #include "3ds/dssms.h"
-#include "3ds/filters.h"
-#include "3ds/saves.h"
-#include "shared.h"
-
-#include "ctr_shell.h"
 
 t_config cfg;
 
-void init()
-{
-	memset(&cfg, 0, sizeof(cfg));
-	cfg.fm=0;
-	cfg.japan= TYPE_OVERSEAS;
-	cfg.joystick=0;
-	cfg.usesram=1;
-	cfg.fullspeed=1;
-	cfg.nosound=0;
-	cfg.filter=-1;
+void init() {
+    memset(&cfg, 0, sizeof(cfg));
+    cfg.fm = 0;
+    cfg.japan = TYPE_OVERSEAS;
+    cfg.joystick = 0;
+    cfg.usesram = 1;
+    cfg.fullspeed = 1;
+    cfg.nosound = 0;
+    cfg.filter = -1;
 
-	gfxInit(GSP_RGB565_OES, GSP_RGB565_OES, false);
-	//gfxSetDoubleBuffering(GFX_TOP, false);
-	consoleInit (GFX_BOTTOM, NULL);
+    osSetSpeedupEnable(true);
+    gfxInit(GSP_RGB565_OES, GSP_RGB565_OES, false);
+    gfxSetDoubleBuffering(GFX_TOP, false);
+    consoleInit(GFX_BOTTOM, NULL);
 
-	if(!cfg.nosound) {
+    if (!cfg.nosound) {
         Result res = csndInit();
-        if(res != 0) {
-            ctr_shell_print("WARNING: audio disabled\n");
-            ctr_shell_print_res(res);
+        if (res != 0) {
             cfg.nosound = 1;
         } else {
-            ctr_shell_print("INFO: audio enabled\n");
         }
-	}
-	APT_SetAppCpuTimeLimit(NULL, 80);
-	gspWaitForVBlank();
+    }
+
+    gspWaitForVBlank();
 }
 
 int main(int argc, char **argv) {
-	//ctr_shell_init(argv, 3333);
 
-	init();
-	ds_init(&cfg);
-	ds_emulate();
- 	ds_shutdown();
+    init();
+    ds_init(&cfg);
+    ds_emulate();
+    ds_shutdown();
 
-    csndExit();
-	gfxExit();
+    if (!cfg.nosound) {
+        csndExit();
+    }
+    gfxExit();
 
-    //ctr_shell_exit();
-	return 0;
+    return 0;
 }

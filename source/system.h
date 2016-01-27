@@ -2,6 +2,10 @@
 #ifndef _SYSTEM_H_
 #define _SYSTEM_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void ym2413_write(int chip, int offset, int data);
 extern OPLL *opll;
 
@@ -95,5 +99,9 @@ void system_load_sram(void);
 void system_save_state(void *fd);
 void system_load_state(void *fd);
 void audio_init(int rate);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _SYSTEM_H_ */

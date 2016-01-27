@@ -1,0 +1,121 @@
+#include <Kairy/Kairy.h>
+#include <stdarg.h>
+
+#include "dssms.h"
+#include "saves.h"
+
+USING_NS_KAIRY;
+
+#define printf debug
+
+              t_config cfg;
+              std::shared_ptr <Sprite> sprite;
+              static u8 *scrBuf;
+
+              void debug(const char *fmt, ...)
+{
+    char s[512];
+    memset(s, 0, 512);
+    va_list args;
+    va_start(args, fmt);
+    int len = vsprintf(s, fmt, args);
+    va_end(args);
+    svcOutputDebugString(s, len);
+}
+
+int init() {
+    memset(&cfg, 0, sizeof(cfg));
+    cfg.fm = 0;
+    cfg.japan = TYPE_OVERSEAS;
+    cfg.joystick = 0;
+    cfg.usesram = 1;
+    cfg.fullspeed = 1;
+    cfg.nosound = 1;
+    cfg.filter = -1;
+
+    if (!cfg.nosound) {
+        Result res = csndInit();
+        if (res != 0) {
+            cfg.nosound = 1;
+        } else {
+        }
+    }
+    APT_SetAppCpuTimeLimit(NULL, 80);
+
+    if (load_rom("/3ds/sms/roms/sonic.sms") == 0) {
+        printf("ERROR: can't load `%s'.\n", "/3ds/sms/roms/sonic.sms");
+        return -1;
+    } else {
+        printf("rom loaded !");
+    }
+
+    sprite = Sprite::create(SMS_SCREEN_WIDTH, SMS_SCREEN_HEIGHT, Color::White, Texture::Location::Ram);
+    sprite->setPosition(0, 0);
+    scrBuf = (u8 *) linearAlloc(SMS_SCREEN_WIDTH * SMS_SCREEN_HEIGHT * 2);
+
+    sms.use_fm = cfg.fm;
+    sms.country = cfg.japan ? TYPE_DOMESTIC : TYPE_OVERSEAS;
+    sms.save = cfg.usesram;
+    memset(&bitmap, 0, sizeof(t_bitmap));
+    bitmap.width = SMS_SCREEN_WIDTH;   // 256
+    bitmap.height = SMS_SCREEN_HEIGHT;  // 192
+    bitmap.depth = 16;
+    bitmap.pitch = SMS_SCREEN_WIDTH * 2;
+    bitmap.data = scrBuf;
+    system_init(cfg.nosound ? 0 : SOUND_FREQUENCY);
+    load_sram(cfg.game_name);
+
+    if (!cfg.nosound) {
+        // ds_sound_init();
+    }
+
+    printf("InitDone\n");
+
+    return 0;
+}
+
+void doFrame() {
+
+    sms_frame(0);
+
+    int x, y;
+    for (x = 0; x < SMS_SCREEN_WIDTH; x++) {
+        for (y = 0; y < SMS_SCREEN_HEIGHT; y++) {
+
+            u8 *p = bitmap.data + y * bitmap.pitch + x * 2;
+            sprite->getTexture().setPixel(x, y, Color(p[0], p[1], p[2]));
+        }
+    }
+
+    //debug("update r=%u g=%u b=%u", r, g, b);
+    sprite->draw();
+}
+
+int main(int argc, char *argv[]) {
+
+    auto device = RenderDevice::getInstance();
+    device->init();
+    device->setQuitOnStart(true);
+
+    init();
+
+    // Main loop
+    while (device->isRunning()) {
+
+        device->setTargetScreen(Screen::Top);
+        device->startFrame();
+        doFrame();
+        device->endFrame();
+
+        device->setTargetScreen(Screen::Bottom);
+        device->clear(Color::Cyan);
+        device->startFrame();
+        device->endFrame();
+
+        device->swapBuffers();
+    }
+
+    device->destroy();
+
+    return 0;
+}

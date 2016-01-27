@@ -19,7 +19,6 @@
 #include "shared.h"
 #ifdef _3DS
 #include <3ds.h>
-#include <ctr_shell.h>
 #endif // _3DS
 
 t_bitmap bitmap;

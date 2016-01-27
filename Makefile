@@ -46,7 +46,7 @@ TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
 SOURCES		:=	source source/cpu source/sound source/3ds
 DATA		:=	data
-INCLUDES	:=	include include/cpu include/sound include/3ds \
+INCLUDES	:=	source source/cpu source/sound source/3ds \
 				$(TOPDIR)/../libctrshell/libctrshell/include
 
 #---------------------------------------------------------------------------------

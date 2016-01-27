@@ -2,6 +2,10 @@
 #ifndef _SMS_H_
 #define _SMS_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define TYPE_OVERSEAS   (0)
 #define TYPE_DOMESTIC   (1)
 
@@ -32,5 +36,9 @@ void sms_reset(void);
 int  sms_irq_callback(int param);
 void sms_mapper_w(int address, int data);
 void cpu_reset(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _SMS_H_ */

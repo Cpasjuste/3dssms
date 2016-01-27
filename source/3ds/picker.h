@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 void debug(const char *msg, ...);
+
 void pick_file(char *picked, const char *path);
 
 #ifdef __cplusplus
